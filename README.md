@@ -69,7 +69,7 @@ The workshop will be organized in a total of ten three-hour daily sessions withi
 #### Tuesday
 
 > Kalman filtering in linear models
-
+> 
 > * Tweaks in the Iris implementation of the Kalman filter
 > * Practical use of the Kalman filter: Missing observations, anticipated shocks, judgmental conditions, etc
 
@@ -84,7 +84,7 @@ The workshop will be organized in a total of ten three-hour daily sessions withi
 #### Thursday
 
 > Practical use of system priors
-
+> 
 > * Practical advantages and examples of system priors
 > * Simulation based system priors: Sacrifice ratio, sign restrictions, response duration
 > * Frequency domain system priors: Business cycle definition, signal-noise ratio

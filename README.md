@@ -2,12 +2,12 @@
 
 ## Preliminary program
 
-The workshop is organized in daily three-hour sessions over two weeks
+The workshop will be organized in a total of ten three-hour daily sessions within the weeks of May 9–13 and May 16–20, 2022.
 
 * The main topics will be first introduced at a basic theoretical/conceptual level
 * The practical illustrations will be based on a variety of actual models and data
 
-### Week 1 
+### Week 1: May 9–13, 2022
 
 #### Monday 
 
@@ -55,7 +55,7 @@ Theoretical introduction to simulation techniques in nonlinear models
 * Stacked time algorithm with first-order terminal condition
 * Quasi-Newton-Steepest-Descent solver
 
-### Week 2
+### Week 2: May 16–20, 2022
 
 #### Monday 
 

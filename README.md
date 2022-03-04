@@ -9,7 +9,7 @@ The workshop is organized in daily three-hour sessions over two weeks
 
 ### Week 1 
 
-##### Monday 
+#### Monday 
 
 Overview of Iris Toolbox functionality
 
@@ -21,7 +21,7 @@ Overview of Iris Toolbox functionality
 * Estimation (`SystemProperty`, `SystemPrior`, `Posterior`)
 * Kalman filtering (`Kalman`)
 
-##### Tuesday
+#### Tuesday
 
 Simulation and forecasting techniques in linear models 
 
@@ -30,7 +30,7 @@ Simulation and forecasting techniques in linear models
 * Forward expansion (anticipated events)
 
 
-##### Wednesday 
+#### Wednesday 
 
 Simulation and forecasting techniques in linear models (cont)
 
@@ -38,7 +38,7 @@ Simulation and forecasting techniques in linear models (cont)
 * Time domain and frequency domain
 * Stochastic simulations
 
-##### Thursday
+#### Thursday
 
 Simulation and forecasting techniques in linear models (cont)
 
@@ -47,7 +47,7 @@ Simulation and forecasting techniques in linear models (cont)
 * Practical construction of more complex scenarios 
 * Analytical error bands: point vs mean conditions
 
-##### Friday
+#### Friday
 
 Theoretical introduction to simulation techniques in nonlinear models
 
@@ -57,7 +57,7 @@ Theoretical introduction to simulation techniques in nonlinear models
 
 ### Week 2
 
-##### Monday 
+#### Monday 
 
 Practical simulation techniques in nonlinear models
 
@@ -66,14 +66,14 @@ Practical simulation techniques in nonlinear models
 * Stochastic simulations in nonlinear models
 
 
-##### Tuesday
+#### Tuesday
 
 Kalman filtering in linear models
 
 * Tweaks in the Iris implementation of the Kalman filter
 * Practical use of the Kalman filter: Missing observations, anticipated shocks, judgmental conditions, etc
 
-##### Wednesday 
+#### Wednesday 
 
 Bayesian estimation with system priors
 
@@ -81,7 +81,7 @@ Bayesian estimation with system priors
 * Posterior mode maximization and Random-walk based posterior simulator
 * Iris implementation
 
-##### Thursday
+#### Thursday
 
 Practical use of system priors
 
@@ -89,7 +89,7 @@ Practical use of system priors
 * Simulation based system priors: Sacrifice ratio, sign restrictions, response duration
 * Frequency domain system priors: Business cycle definition, signal-noise ratio
 
-##### Friday
+#### Friday
 
 No specific agenda assigned
 

@@ -1,4 +1,7 @@
-# Iris Toolbox workshop for the Central Bank of Brazil
+# Model-based Macroeconomic Projections
+
+__Workshop for the Central Bank of Brazil__
+
 
 ## Preliminary program
 

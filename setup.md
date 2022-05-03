@@ -67,14 +67,14 @@ addpath ../iris-toolbox; iris.startup
 ```
 
 * Test the `system-priors` tutorial: Switch to the `system-priors`
-  subsubfolder
+  subsubfolder, and run the scripts in the order indicated by the names of
+  the scripts (e.g. `run01_createModel`, etc.)
 
 ```
 >> cd system-priors
+>> run01_createModel
 ```
 
-and run the scripts in the order indicated by the names of
-  the scripts (e.g. `run01_createModel`, etc.)
 
 
 

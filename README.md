@@ -13,6 +13,6 @@ __Workshop for the Central Bank of Brazil__
 
 | Topic | Folder |
 |---|---|
-| System priors | [](./system-priors) |
+| System priors | [./system-priors](./system-priors) |
 
 

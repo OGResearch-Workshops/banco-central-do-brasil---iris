@@ -53,7 +53,7 @@ git clone https://github.com/OGResearch-Workshops/banco-central-do-brasil---iris
 
 * Start up Matlab
 
-* Sweitch to the `workshop-files` folder within the workshop root folder,
+* Switch to the `workshop-files` folder within the workshop root folder,
 e.g. by running the following Matlab command
 
 ```
@@ -67,7 +67,13 @@ addpath ../iris-toolbox; iris.startup
 ```
 
 * Test the `system-priors` tutorial: Switch to the `system-priors`
-  subsubfolder, and run the scripts in the order indicated by the names of
+  subsubfolder
+
+```
+>> cd system-priors
+```
+
+and run the scripts in the order indicated by the names of
   the scripts (e.g. `run01_createModel`, etc.)
 
 

@@ -2,7 +2,8 @@
 
 ## Overview of requirements/dependencies
 
-* Matlab R2019b or later
+* Matlab R2019b or later (assumed to be installed already on your computer,
+  or assumed to be accessible over the network)
 
 * Git, a version control system
 

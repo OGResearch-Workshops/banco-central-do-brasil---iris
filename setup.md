@@ -17,6 +17,7 @@
 Install [Git](https://git-scm.com) (a version control system) locally on
 your computer. This may require assistance by your IT department.
 
+
 ## Create a folder for the workshop
 
 Choose and create a directory (folder) within which you will maintain two subfolders: one for the Iris
@@ -71,6 +72,7 @@ addpath ../iris-toolbox; iris.startup
   subsubfolder, and run the scripts in the order indicated by the names of
   the scripts (e.g. `run01_createModel`, etc.)
 
+
 ```
 >> cd system-priors
 >> run01_createModel
@@ -81,7 +83,15 @@ addpath ../iris-toolbox; iris.startup
 
 When you need to update the local clone of either repository (the Iris
 Toolbox, or the workshop files) from GitHub, you just issue one simple
-command executed from within Matlab, and that's it. No manual download, unzipping, deleting etc. needed.
+command executed from within your command line or from within Matlab, and
+that's it. No manual download, unzipping, deleting etc. needed.
+
+You can alternatively use one of the many graphical user interfaces
+available for Git repositories (including a basic one directly in Matlab).
+We will go over this at the benning of the workshop.
+
+
+#### Updating local repo from command line (PowerShell, Terminal, ...)
 
 ```
 >> cd C:\Users\Marcos\wokshop-2022\iris-toolbox
@@ -93,6 +103,23 @@ and/or
 ```
 >> cd C:\Users\Marcos\wokshop-2022\workshop-files
 >> git pull
+```
+
+
+#### Updating local repo from Matlab
+
+Note the exclamation mark in fron of the `git` command
+
+```
+>> cd C:\Users\Marcos\wokshop-2022\iris-toolbox
+>> !git pull
+```
+
+and/or
+
+```
+>> cd C:\Users\Marcos\wokshop-2022\workshop-files
+>> !git pull
 ```
 
 

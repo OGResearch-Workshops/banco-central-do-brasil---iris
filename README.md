@@ -14,5 +14,5 @@ __Workshop for the Central Bank of Brazil__
 | Topic | Folder |
 |---|---|
 | System priors | [./system-priors](./system-priors) |
-
+| Simple nonlinear sovereign risk extension to a QPM | [./nonlin=sovereign-risk](./nonlin-sovereign-risk) | 
 

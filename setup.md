@@ -94,15 +94,15 @@ We will go over this at the benning of the workshop.
 #### Updating local repo from command line (PowerShell, Terminal, ...)
 
 ```
->> cd C:\Users\Marcos\wokshop-2022\iris-toolbox
->> git pull
+...> cd C:\Users\Marcos\wokshop-2022\iris-toolbox
+...> git pull
 ```
 
 and/or
 
 ```
->> cd C:\Users\Marcos\wokshop-2022\workshop-files
->> git pull
+...> cd C:\Users\Marcos\wokshop-2022\workshop-files
+...> git pull
 ```
 
 

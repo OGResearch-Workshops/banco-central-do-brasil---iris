@@ -37,7 +37,7 @@ a command window, or a Terminal) to clone the `bleeding` edge branch of the
 Iris Toolbox to an `iris-toolbox` subfolder:
 
 ```
-git clone --branch bleeding https://github.com/IRIS-Solutions-Team/IRIS-Toolbox/tree/bleeding iris-toolbox
+git clone --branch bleeding https://github.com/IRIS-Solutions-Team/IRIS-Toolbox iris-toolbox
 ```
 
 
@@ -77,5 +77,22 @@ addpath ../iris-toolbox; iris.startup
 ```
 
 
+## Updating the codebase (IrisT, workshop files) during the workshop
+
+When you need to update the local clone of either repository (the Iris
+Toolbox, or the workshop files) from GitHub, you just issue one simple
+command executed from within Matlab, and that's it. No manual download, unzipping, deleting etc. needed.
+
+```
+>> cd C:\Users\Marcos\wokshop-2022\iris-toolbox
+>> git pull
+```
+
+and/or
+
+```
+>> cd C:\Users\Marcos\wokshop-2022\workshop-files
+>> git pull
+```
 
 

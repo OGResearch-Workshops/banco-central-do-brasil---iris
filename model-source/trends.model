@@ -1,0 +1,131 @@
+% Semi-structural policy model blueprint for CARB
+% Long-term trends module
+
+
+!transition-variables(:trends)
+
+    "Log GDP trend !! y^\mathrm{tnd}" l_gdp_tnd
+    "Log GDP trend, Q/Q PA !! \Delta y^\mathrm{tnd}" dl_gdp_tnd
+    "Log real exchange rate trend !! rex^\mathrm{tnd}" l_rex_tnd
+    "Log real exchange rate trend !! \Delta rex^\mathrm{tnd}" dl_rex_tnd
+    "Real short-term rate trend, PA !! rr^\mathrm{tnd}" rr_tnd
+    "Short-term rate trend, PA !! r^\mathrm{tnd}" r_tnd
+    "Interest disparity trend, PA !! prem^\mathrm{tnd}" prem_tnd
+    "Foreign real short-term rate, FCY PA !! rr^\mathrm{ww,tnd}" rr_ww_tnd
+
+
+!parameters(:trends)
+
+    % Directly calibrated steady-state properties
+
+    "S/S Real GDP, Q/Q PA" ss_dl_gdp
+    "S/S CPI, Q/Q PA" ss_dl_cpi
+    "S/S Real short-term rate" ss_rr
+    "S/S Real exchange rate, Q/Q PA"  ss_dl_rex
+
+
+    % Dynamic parameters
+
+    "Autoregression in real GDP trend" c0_dl_gdp_tnd
+    "Hysteresis in real GDP trend" c1_dl_gdp_tnd
+    cx_dl_gdp_tnd
+
+    "Autoregression in real short-term rate trend" c0_rr_tnd
+    "Autoregression in real exchange rate trend" c0_dl_rex_tnd
+    "Response in real exchange rate trend to real exchange rate gap" c1_dl_rex_tnd
+    "Autoregression in real foreign short-term rate" c0_rr_ww_tnd
+
+
+!transition-shocks
+
+    "Shock to GDP trend growth" shock_dl_gdp_tnd
+    "Shock to GDP trend level" shock_l_gdp_tnd
+    "Shock to real exchange rate trend" shock_dl_rex_tnd
+    "Shock to real short-term rate trend" shock_rr_tnd
+    "Shock to real foreign short-term rate trend, FCY" shock_rr_ww_tnd
+
+    "Tune on GDP trend growth" tune_dl_gdp_tnd
+    "Tune on real short-term rate trend" tune_rr_tnd
+    "Tune on foreign real short-term rate trend" tune_rr_ww_tnd
+    "Tune on real exchange rate trend" tune_dl_rex_tnd
+
+    !for dl_gdp_tnd, dl_rex_tnd, rr_tnd, rr_ww_tnd !do
+        rec_?
+    !end
+
+
+!substitutions
+
+    ss_prem := (ss_rr - ss_rr_ww - ss_dl_rex);
+
+
+!transition-equations(:trends)
+
+    "GDP trend assumptions"
+    dl_gdp_tnd = ...
+        + c0_dl_gdp_tnd * dl_gdp_tnd{-1} ...
+        + (1 - c0_dl_gdp_tnd) * ss_dl_gdp ...
+        + c1_dl_gdp_tnd * l_gdp_gap ...
+        + shock_dl_gdp_tnd ...
+        + tune_dl_gdp_tnd ...
+        + cx_dl_gdp_tnd*tune_l_gdp ...
+        + rec_dl_gdp_tnd ...
+    !! dl_gdp_tnd = ss_dl_gdp;
+
+
+    "Real short-term rate trend assumptions"
+    rr_tnd = ...
+        + c0_rr_tnd * rr_tnd{-1} ...
+        + (1 - c0_rr_tnd) * ss_rr ...
+        + shock_rr_tnd ...
+        + tune_rr_tnd ...
+        + rec_rr_tnd ...
+    !! rr_tnd = ss_rr;
+
+
+    "Real unconvered interest parity"
+    rr_tnd - prem_tnd = rr_ww_tnd + dl_rex_tnd{+1} ...
+    !! prem_tnd = $ss_prem$;
+
+
+    "Real exchange rate trend assumptions"
+    dl_rex_tnd = ...
+        + c0_dl_rex_tnd * dl_rex_tnd{-1} ...
+        + (1 - c0_dl_rex_tnd) * ss_dl_rex ...
+        + c1_dl_rex_tnd * l_rex_gap ...
+        + tune_dl_rex_tnd ...
+        + shock_dl_rex_tnd ...
+        + rec_dl_rex_tnd ...
+    !! dl_rex_tnd = ss_dl_rex;
+
+
+    "Fisher identity for long-term trends"
+    r_tnd = rr_tnd + ss_dl_cpi;
+
+
+    "Foreign real short-term rate trend, FCY"
+    rr_ww_tnd = ...
+        + c0_rr_ww_tnd * rr_ww_tnd{-1} ...
+        + (1 - c0_rr_ww_tnd) * ss_rr_ww ...
+        + tune_rr_ww_tnd ...
+        + shock_rr_ww_tnd ...
+        + rec_rr_ww_tnd ...
+    !! rr_ww_tnd = ss_rr_ww;
+
+
+
+% Rates of change
+
+    !for gdp_tnd, rex_tnd !do
+        dl_? = 4 * diff(l_?);
+    !end
+
+
+!autoswaps-simulate
+
+    dl_gdp_tnd := tune_dl_gdp_tnd;
+    rr_tnd := tune_rr_tnd;
+    rr_ww_tnd := tune_rr_ww_tnd;
+    dl_rex_tnd := tune_dl_rex_tnd;
+
+

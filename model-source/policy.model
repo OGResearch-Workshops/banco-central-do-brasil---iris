@@ -1,0 +1,199 @@
+% Semi-structural policy model blueprint for CARB
+% Monetary policy and exchange rate module
+
+
+!variables(:policy)
+
+    "Short-term rate, PA !! r" r
+    "Short-term rate target, PA !! r^\mathrm{tar}" r_tar
+    "Real short-term rate, PA !! rr" rr
+    "Real short-term rate gap, PA !! rr^\mathrm{gap}" rr_gap
+    "Extent of forex interventions in premium equivalent, PA" int
+
+    "Log nominal effective exchange rate !! ex" l_ex
+    "Log nominal effective exchange rate, Q/Q PA !! \Delta ex" dl_ex
+    "Log nominal effective exchange rate depreciation gap !! \Delta ex^\mathrm{gap}" dl_ex_gap
+
+    "Log nominal effective-USD cross exchange rate !! ex" l_ex_cross
+
+    "Log nominal USD exchange rate !! ex^\mathrm{usd}" l_ex_usd
+    "Log nominal USD exchange rate, Q/Q PA !! \Delta ex^\mathrm{usd}" dl_ex_usd
+    "Log nominal USD exchange rate implied by UIP !! ex^\mathrm{usd,uip}" l_ex_usd_uip
+    "Log nominal USD exchange rate target !! ex^\mathrm{usd,tar}" l_ex_usd_tar
+    "Short-term nominal USD exchange rate expectations !! ex^\mathrm{usd,ste}" l_ex_usd_ste
+
+    "Log real exchange rate !! rex" l_rex
+    "Log real exchange rate, Q/Q PA !! \Delta rex" dl_rex
+    "Log real exchange rate gap !! rex^\mathrm{gap}" l_rex_gap
+    "Log real exchange rate gap, Q/Q PA !! \Delta rex^\mathrm{gap}" dl_rex_gap
+
+    "Interest disparity, PA !! prem" prem
+    "Interest disparity gap, PA !! prem^\mathrm{gap}" prem_gap
+
+
+!parameters(:policy)
+
+    "Autoregression in short-term rate target" c0_r_tar
+
+    "Intensity of interest rate differential in UIP" c1_l_ex_usd
+    "Weight on model-consistent expectations in exchange rate expectations" c1_l_ex_usd_ste
+    "Response in interest disparity to lending conditions" c1_prem
+    "Autoregression in autonomous cyclical component in interest disparity" c0_prem_gap
+
+
+    "Response in short-term rate target to inflation" c1_r_tar
+    "Response in short-term rate target o GDP gap" c2_r_tar
+    "Response in short-term rate target to real exchange rate gap" c3_r_tar
+
+    "Weight on exchange rate targeting through short-term rate" c1_r
+    "Weight on exchange rate targeting through forex interventions" c1_int
+    
+
+!shocks(:policy)
+
+    "Shock to short term rate target, LCY" shock_r_tar
+    "Shock to short term rate, LCY" shock_r
+    "Shock to forex interventions" shock_int
+    "Shock to nominal USD exchange rate" shock_l_ex_usd
+    "Shock to autonomous cyclical component in interest disparity" shock_prem_gap
+    "Shock to nominal exchange rate target" shock_l_ex_usd_tar
+    "Shock to nominal effective-to-USD cross rate" shock_l_ex_cross
+
+    "Tune on short term rate, LCY" tune_r_tar
+    "Tune on autonomous cyclical component in interest disparity" tune_prem_gap
+
+    !for r, l_ex_cross, l_ex_usd !do
+        rec_?
+    !end
+
+
+!substitutions
+
+    ss_dl_ex := (ss_dl_rex + ss_dl_cpi - ss_dl_cpi_ww);
+
+
+!equations(:policy)
+
+% Monetary Policy
+
+    "Short-term rate target reaction function"
+    r_tar = ...
+        + c0_r_tar * r{-1} ...
+        + (1 - c0_r_tar) * [ ...
+            + r_tnd ...
+            + q1 * (d4l_cpi{+3} - ss_dl_cpi) ...
+            + q2 * l_gdp_gap ...
+            + q3 * l_rex_gap{+4} ...
+        ] ...
+        + shock_r_tar ...
+        + tune_r_tar ...
+        + rec_r ...
+    !! r = r_tnd;
+
+
+    "Exchange rate targeting through short-term rate"
+    r = r_tar + q4*(l_ex_usd_uip - l_ex_usd) + shock_r ...
+    !! r = r_tar;
+
+
+    "Exchange rate targeting through forex interventions"
+    l_ex_usd = q5*l_ex_usd_tar + (1 - q5)*l_ex_usd_uip;
+
+
+    "Extent of forex interventions in premium equivalent, PA"
+    int = l_ex_usd_uip - l_ex_usd;
+
+
+    "Nominal exchange rate target"
+    l_ex_usd_tar = ...
+        + l_ex_usd_tar{-1} ...
+        + $ss_dl_ex$/4 ...
+        + shock_l_ex_usd_tar ...
+        + rec_l_ex_usd ...
+    !! l_ex_usd_tar = l_ex_usd;
+
+
+    "Fisher equation"
+    rr = r - dl_cpi_ste ...
+    !! rr = ss_rr;
+
+
+    rr_gap = rr - rr_tnd ...
+    !! rr_gap = 0;
+
+
+% Exchange rate
+
+    "Uncovered interest parity"
+    c1_l_ex_usd*(r - r_ww) + (1 - c1_l_ex_usd)*( &r - &r_ww ) ...
+        = 4*(l_ex_usd_ste - l_ex_usd_uip) ...
+        + prem ...
+        + shock_l_ex_usd ...
+        + rec_l_ex_usd;
+
+  
+    "Interest disparity"
+    prem = prem_tnd + prem_gap + c1_prem*rlc ...
+    !! prem = $ss_prem$;
+
+
+    "Interest disparity gap"
+    prem_gap = ...
+        + c0_prem_gap * prem_gap{-1} ...
+        + shock_prem_gap ...
+        + tune_prem_gap ...
+    !! prem_gap = 0;
+
+
+    "Short-term exchange rate expectations"
+    l_ex_usd_ste = ...
+        + c1_l_ex_usd_ste * l_ex_usd{+1} ...
+        + (1 - c1_l_ex_usd_ste) * [l_ex_usd{-1} + 2*(dl_rex_tnd + d4l_cpi - d4l_cpi_ww)/4] ...
+    !! l_ex_usd_ste = l_ex_usd{+1};
+
+
+    "Real exchange rate definition"
+    l_rex = l_ex + l_cpi_ww - l_cpi;
+
+
+    "Real exchange rate trend-gap decomposition"
+    l_rex = l_rex_tnd + l_rex_gap;
+
+
+    "Nominal exchange rate depreciation gap"
+    dl_ex_gap = dl_ex - (dl_rex_tnd - ss_dl_cpi_ww + ss_dl_cpi);
+
+
+    "Effective to USD cross rate"
+    l_ex_cross = ...
+        + l_ex_cross{-1} ...
+        + shock_l_ex_cross  ...
+        + rec_l_ex_cross ...
+    !! l_ex_cross = 0;
+
+
+    "Nominal effective exchange rate"
+    l_ex = l_ex_usd + l_ex_cross;
+
+
+% Q/Q PA rates of change
+
+    !for rex, rex_gap, ex, ex_usd !do
+        dl_? = 4 * diff(l_?);
+    !end
+
+
+% Autoregressive processes for time-varying policy parameters
+
+    !for q1, q2, q3, q4, q5 !do
+        !variables
+            ?
+        !parameters
+            c0_?, ss_?
+        !shocks
+            shocke_?, shocku_? 
+        !equations
+            ? = c0_? * ?{-1} + (1 - c0_?)*ss_? + shocke_? + shocku_? ...
+            !! ? = ss_?;
+    !end
+

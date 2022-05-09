@@ -1,0 +1,99 @@
+% Semi-structural policy model blueprint for CARB
+% World economy module 
+
+
+!transition-variables(:world)
+
+    "Log foreign demand gap !! y^\mathrm{ww, gap}" l_gdp_ww_gap
+    "Foreign short-term rate, FCY PA !! r^\mathrm{ww}" r_ww
+    "Foreign real short-term rate, FCY PA !! rr^\mathrm{ww}" rr_ww
+    "Log foreign CPI !! p^\mathrm{ww}" l_cpi_ww
+    "Log foreign CPI, Q/Q PA !! \Delta p^\mathrm{ww}" dl_cpi_ww
+    "Log foreign CPI, Y/Y !! \Delta_4 p^\mathrm{ww}" d4l_cpi_ww
+
+
+!parameters(:world)
+
+    % Directly calibrate steady state properties
+
+    "S/S Foreign real short-term rate, FCY" ss_rr_ww
+    "S/S Foreign CPI, Q/Q PA" ss_dl_cpi_ww
+
+
+    % Dynamic parameters
+
+    "Autoregression in foreign demand gap" c0_l_gdp_ww_gap
+    "Autoregression in foreign short-term rate" c0_r_ww
+    "Autoregression in foreign CPI inflation" c0_dl_cpi_ww
+    "Weight on model-consistent expectations in foreign inflation" c1_rr_ww
+
+
+!shocks
+
+    "Shock to foreign demand gap" shock_l_gdp_ww_gap
+    "Shock to foreign short-term rate, FCY" shock_r_ww
+    "Shock to foreign CPI inflation" shock_dl_cpi_ww
+
+    "Tune on foreign demand gap" tune_l_gdp_ww_gap
+    "Tune on foreign short-term rate" tune_r_ww
+    "Tune on to foreign CPI inflation" tune_dl_cpi_ww
+
+    !for l_gdp_ww_gap, r_ww, dl_cpi_ww !do
+        rec_?
+    !end
+
+
+!substitutions
+
+    ss_r_ww := (ss_rr_ww + ss_dl_cpi_ww);
+
+
+!transition-equations(:world)
+
+    "Foreign demand gap"
+    l_gdp_ww_gap = ...
+        + c0_l_gdp_ww_gap * l_gdp_ww_gap{-1} ...
+        + tune_l_gdp_ww_gap ...
+        + shock_l_gdp_ww_gap ...
+        + rec_l_gdp_ww_gap ...
+    !! l_gdp_ww_gap = 0;
+
+
+    "Short-term foreign rate, FCY"
+    r_ww = ...
+        + c0_r_ww * r_ww{-1} ...
+        + (1 - c0_r_ww) * $ss_r_ww$ ...
+        + tune_r_ww ...
+        + shock_r_ww ...
+        + rec_r_ww ...
+    !! r_ww = $ss_r_ww$;
+
+
+    "Foreign CPI inflation"
+    dl_cpi_ww = ... 
+        + c0_dl_cpi_ww * dl_cpi_ww{-1} ...
+        + (1 - c0_dl_cpi_ww) * ss_dl_cpi_ww ...
+        + tune_dl_cpi_ww ...
+        + shock_dl_cpi_ww ...
+        + rec_dl_cpi_ww ...
+    !! dl_cpi_ww = ss_dl_cpi_ww;
+
+
+    "Foreign real short-term rate, FCY"
+    rr_ww = r_ww - ((1 - c1_rr_ww)*dl_cpi_ww{-1} + c1_rr_ww*dl_cpi_ww{+1}) ...
+    !! rr_ww = ss_rr_ww;
+
+
+    % Q/Q rates of change
+    !for cpi_ww !do
+        dl_? = 4 * diff(l_?);
+        d4l_? = diff(l_?, -4);
+    !end
+
+
+!autoswaps-simulate
+
+    l_gdp_ww_gap := tune_l_gdp_ww_gap;
+    dl_cpi_ww := tune_dl_cpi_ww;
+    r_ww := tune_r_ww;
+

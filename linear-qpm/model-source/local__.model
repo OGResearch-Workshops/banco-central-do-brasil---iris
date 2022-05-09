@@ -1,0 +1,278 @@
+% Semi-structural policy model blueprint for CARB
+% Local economy module
+
+
+!variables(:local)
+
+    "Log real GDP !! y" l_gdp
+    "Log nominal GDP !! ny" l_ngdp
+    "Log GDP deflator !! py" l_pgdp
+    "Log real GDP, Q/Q PA !! \Delta y" dl_gdp
+    "Log real GDP, Y/Y !! \Delta_4 y" d4l_gdp
+
+    "Log nominal GDP, Q/Q PA !! \Delta ny" dl_ngdp
+    "Log GDP deflator, Q/Q PA !! \Delta py" dl_pgdp
+    "Log GDP gap !! y^\mathrm{gap}" l_gdp_gap
+    "Log discounted future income !! y^\mathrm{fws}" l_gdp_fws
+
+    "Log CPI !! p" l_cpi
+    "Log CPI, Q/Q PA !! \Delta p" dl_cpi
+    "Log CPI, Y/Y !! \Delta_4 p" d4l_cpi
+
+    "Short-term inflation expectations !! \Delta p^\mathrm{ste}" dl_cpi_ste
+
+    "Short-term rate, PA !! r" r
+    "Short-term rate target, PA !! r^\mathrm{tar}" r_tar
+    "Real short-term rate, PA !! rr" rr
+    "Real short-term rate gap, PA !! rr^\mathrm{gap}" rr_gap
+    "Forex interventions in premium equivalent, PA !! int" int
+
+    "Log nominal exchange rate !! ex" l_ex
+    "Log nominal exchange rate, Q/Q PA !! \Delta ex" dl_ex
+    "Short-term nominal exchange rate expectations !! ex^\mathrm{ste}" l_ex_ste
+    "Log nominal exchange rate depreciation gap !! \Delta ex^\mathrm{gap}" dl_ex_gap
+    "Log nominal exchange rate target !! ex^\mathrm{tar}" l_ex_tar
+
+    "Log real exchange rate !! rex" l_rex
+    "Log real exchange rate, Q/Q PA !! \Delta rex" dl_rex
+    "Log real exchange rate gap !! rex^\mathrm{gap}" l_rex_gap
+    "Log real exchange rate gap, Q/Q PA !! \Delta rex^\mathrm{gap}" dl_rex_gap
+
+    "Interest disparity, PA !! prem" prem
+    "Interest disparity gap, PA !! prem^\mathrm{gap}" prem_gap
+
+    "New lending conditions in lending spread equivalent, PA !! rlc" rlc
+
+
+!parameters(:local)
+
+    "Inflation differential between GDP deflator and CPI, PA" ss_dl_pgdp_minus_dl_cpi<0>
+
+    "Autoregression in GDP gap" c0_l_gdp_gap<0.75>
+    "Response in GDP gap to future income proxy" c1_l_gdp_gap<0.01>
+    "Response i nGDP gap to real short-term rate" c2_l_gdp_gap<0.05>
+    "Response in GDP gap to lending conditions" c3_l_gdp_gap<0.02>
+    "Response in GDP gap to real exchange rate gap" c4_l_gdp_gap<0.05>
+    "Response in GDP gap to foreign demand" c5_l_gdp_gap<0.2>
+
+    "Autoregression in GDP deflator" c0_dl_pgdp<0.5>
+    "Discount factor in discounted future income" c1_l_gdp_fws<0.9>
+
+    "Autoregression in CPI inflation" c0_dl_cpi<0.6>
+    "Response in CPI inflation to GDP gap" c1_dl_cpi<0.08>
+    "Response in CPI inflation to RER gap" c2_dl_cpi<0.02>
+    "Response in CPI inflation to RER gap change" c3_dl_cpi<0>
+    "Persistence of response in CPI inflation to RER gap change" c4_dl_cpi<0.5>
+
+    "Weight on model-consistent expectations in inflation expectations" c1_dl_cpi_ste<0.8>
+    "Weight on S/S inflation in inflation expectations" c2_dl_cpi_ste<1>
+
+    "Autoregression in short-term rate target" c0_r_tar<0.8>
+    "Response in short-term rate target to inflation" c1_r_tar<2.5>
+    "Response in short-term rate target o GDP gap" c2_r_tar<0>
+    "Response in short-term rate target to FX gap" c3_r_tar<0>
+    c4_r_tar<-1>
+
+    "Weight on exchange rate targeting through short-term rate" c1_r<0>
+    "Weight on exchange rate targeting through forex interventions" c1_int<0>
+
+
+    "Intensity of interest rate differential in UIP" c1_l_ex<0.5>
+    "Weight on model-consistent expectations in exchange rate expectations" c1_l_ex_ste<0.9>
+    "Response in interest disparity to lending conditions" c1_prem<0.5>
+    "Autoregression in autonomous cyclical component in interest disparity" c0_prem_gap<0.8>
+
+
+!shocks
+
+    "Shock to GDP gap" shock_l_gdp_gap
+    "Shock to GDP deflator" shock_dl_pgdp
+    "Shock to CPI" shock_dl_cpi
+    "Shock to short term rate target, LCY" shock_r_tar
+    "Shock to short term rate, LCY" shock_r
+    "Shock to forex interventions" shock_int
+    "Shock to exchange rate" shock_e
+    "Shock to autonomous cyclical component in interest disparity" shock_prem_gap
+    "Shock to nominal exchange rate target" shock_l_ex_tar
+
+    "Tunes on GDP gap" tune_l_gdp_gap
+    "Tune on CPI" tune_dl_cpi
+    "Tune on short term rate, LCY" tune_r_tar
+    "Tune on autonomous cyclical component in interest disparity" tune_prem_gap
+
+
+!substitutions
+
+    ss_dl_ex := (ss_dl_rex<-1> + ss_dl_cpi<5> - ss_dl_cpi_ww<4>);
+
+
+!equations(:local)
+
+% GDP
+
+    "GDP trend-gap decomposition"
+    l_gdp = l_gdp_tnd + l_gdp_gap;
+
+
+    "Aggregate demand equation"
+    l_gdp_gap = ...
+        + c0_l_gdp_gap<0.75> * l_gdp_gap{-1} ...
+        + c1_l_gdp_gap<0.01> * (l_gdp_fws - l_gdp) ...
+        - c2_l_gdp_gap<0.05> * rr_gap ...
+        - c3_l_gdp_gap<0.02> * rlc ...
+        + c4_l_gdp_gap<0.05> * l_rex_gap ...
+        + c5_l_gdp_gap<0.2> * l_gdp_ww_gap ...
+        + shock_l_gdp_gap ...
+        + tune_l_gdp_gap ...
+    !! l_gdp_gap = 0;
+
+
+    "GDP deflator, Q/Q PA"
+    dl_pgdp = ...
+        + dl_cpi + ss_dl_pgdp_minus_dl_cpi<0> ...
+        + c0_dl_pgdp<0.5> * (dl_pgdp{-1} - dl_cpi{-1}) ...
+        + shock_dl_pgdp ...
+    !! dl_pgdp = dl_cpi + ss_dl_pgdp_minus_dl_cpi<0>;
+
+
+    "Nominal GDP identity"
+    l_ngdp = l_pgdp + l_gdp;
+
+
+% Discounted future income
+
+    "Discounted for_wward sum of real GDP, normalized to current"
+    l_gdp_fws = ...
+        + (1 - c1_l_gdp_fws<0.9>) * l_gdp ...
+        + c1_l_gdp_fws<0.9> * (l_gdp_fws{+1} - ss_dl_gdp<3>/4) ...
+    !! l_gdp_fws = l_gdp;
+
+
+% Consumer prices
+
+    "Phillips curve"
+    dl_cpi = ...
+        + c0_dl_cpi<0.6> * dl_cpi{-1} ...
+        + (1 - c0_dl_cpi<0.6>) * dl_cpi_ste ...
+        + c1_dl_cpi<0.08> * l_gdp_gap ...
+        + c2_dl_cpi<0.02> * l_rex_gap ...
+        + c3_dl_cpi<0> * (dl_ex_gap - c4_dl_cpi<0.5>*dl_ex_gap{-1}) ...
+        + shock_dl_cpi ...
+        + tune_dl_cpi ...
+    !! dl_cpi = ss_dl_cpi<5>;
+
+
+    "Short-term inflation expectations"
+    dl_cpi_ste = ...
+        + c1_dl_cpi_ste<0.8> * [c2_dl_cpi_ste<1>*dl_cpi{+1} + (1 - c2_dl_cpi_ste<1>)*ss_dl_cpi<5>] ...
+        + (1 - c1_dl_cpi_ste<0.8>) * dl_cpi{-1} ...
+    !! dl_cpi_ste = ss_dl_cpi<5>;
+
+
+% Monetary Policy
+
+    "Short-term rate target reaction function"
+    r_tar = ...
+        + c0_r_tar<0.8> * r{-1} ...
+        + (1 - c0_r_tar<0.8>) * [ ...
+            + r_tnd ...
+            + c1_r_tar<2.5> * (d4l_cpi{+3} - ss_dl_cpi<5>) ...
+            + c2_r_tar<0> * l_gdp_gap ...
+            + c3_r_tar<0> * dl_ex_gap ...
+            + c4_r_tar<-1> * l_rex_gap{+4} ...
+        ] ...
+        + shock_r_tar ...
+        + tune_r_tar ...
+    !! r = r_tnd;
+
+
+    "Exchange rate targeting through short-term rate"
+    r - r_tar = c1_r<0>*(l_ex - l_ex_tar) + shock_r ...
+    !! r = r_tar;
+
+
+    "Exchange rate targeting through forex interventions"
+    int = c1_int<0>*(l_ex - l_ex_tar) + shock_int ...
+    !! int = 0;
+
+
+    "Nominal exchange rate target"
+    l_ex_tar = l_ex_tar{-1} + $ss_dl_ex$/4 + shock_l_ex_tar ...
+    !! l_ex_tar = l_ex;
+
+
+    "Fisher equation"
+    rr = r - dl_cpi_ste ...
+    !! rr = ss_rr<1>;
+
+
+    rr_gap = rr - rr_tnd ...
+    !! rr_gap = 0;
+
+
+% Exchange rate
+
+    "Uncovered interest parity"
+    c1_l_ex<0.5>*(r - r_ww) + (1 - c1_l_ex<0.5>)*( &r - &r_ww ) ...
+        + int - prem ...
+        = 4*(l_ex_ste - l_ex) + shock_e;
+
+  
+    "Interest disparity"
+    prem = prem_tnd + prem_gap + c1_prem<0.5>*rlc ...
+    !! prem = $ss_prem$;
+
+
+    "Interest disparity gap"
+    prem_gap = ...
+        + c0_prem_gap<0.8> * prem_gap{-1} ...
+        + shock_prem_gap ...
+        + tune_prem_gap ...
+    !! prem_gap = 0;
+
+
+    "Short-term exchange rate expectations"
+    l_ex_ste = ...
+        + c1_l_ex_ste<0.9> * l_ex{+1} ...
+        + (1 - c1_l_ex_ste<0.9>) * [l_ex{-1} + 2*(dl_rex_tnd + d4l_cpi - d4l_cpi_ww)/4] ...
+    !! l_ex_ste = l_ex{+1};
+
+
+    "Real exchange rate definition"
+    l_rex = l_ex + l_cpi_ww - l_cpi;
+
+
+    "Real exchange rate trend-gap decomposition"
+    l_rex = l_rex_tnd + l_rex_gap;
+
+
+    "Nominal exchange rate depreciation gap"
+    dl_ex_gap = dl_ex - (dl_rex_tnd - ss_dl_cpi_ww<4> + ss_dl_cpi<5>);
+
+
+% Q/Q PA rates of change
+
+    !for gdp, ngdp, pgdp, cpi, rex, rex_gap, ex !do
+        dl_? = 4 * diff(l_?);
+    !end
+
+
+% Y/Y rates of change
+
+    !for gdp, cpi !do
+        d4l_? = diff(l_?, -4);
+    !end
+
+
+% Scenarios
+
+    rlc = 0;
+
+
+!autoswaps-simulate
+
+    l_gdp_gap := tune_l_gdp_gap;
+    dl_cpi := tune_dl_cpi;
+    r_tar := tune_r_tar;
+    l_ex := tune_prem_gap;
+

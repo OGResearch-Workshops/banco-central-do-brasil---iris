@@ -1,3 +1,4 @@
+%% Prepare data for mixed-freq VAR
 
 close all
 clear 
@@ -20,6 +21,7 @@ d = databank.clip(d, mm(1995,1), Inf);
 d.ip = x13.season(d.ip_u, Pickmdl=true);
 d.cpi = x13.season(d.cpi_u, Pickmdl=true);
 
+
 %{
 [d.gdp_sa, d.gdp_fct, d.gdp_bct, info] = x13.season( ...
     d.gdp_u ...
@@ -31,6 +33,8 @@ d.cpi = x13.season(d.cpi_u, Pickmdl=true);
 );
 %}
 
+
+
 databank.list(d)
 
 d.pct_gdp =  pct(d.gdp);
@@ -39,9 +43,11 @@ d.ip1 = convert(d.ip, Frequency.QUARTERLY, method=@mean, select=1);
 d.ip2 = convert(d.ip, Frequency.QUARTERLY, method=@mean, select=[1, 2]);
 d.ip = convert(d.ip, Frequency.QUARTERLY, method=@mean);
 
+
 d.pct_ip1 = 100*(d.ip1 / d.ip{-1} - 1);
 d.pct_ip2 = 100*(d.ip2 / d.ip{-1} - 1);
 d.pct_ip = 100*(d.ip / d.ip{-1} - 1);
+
 
 d.bm1 = convert(d.bm, Frequency.QUARTERLY, method=@mean, select=1);
 d.bm2 = convert(d.bm, Frequency.QUARTERLY, method=@mean, select=[1, 2]);
@@ -59,9 +65,13 @@ d.pct_cpi1 = 100*(d.cpi1 / d.cpi{-1} - 1);
 d.pct_cpi2 = 100*(d.cpi2 / d.cpi{-1} - 1);
 d.pct_cpi = 100*(d.cpi / d.cpi{-1} - 1);
 
+
+%% Spy unbalanced panel of data
+
 list = "pct_" + ["gdp", "cpi"+["","2","1"], "ip"+["","2","1"], "bm"+["","2","1"]];
 x = databank.toSeries(d, list, qq(2020,1):qq(2022,4));
-spy(x, names=list, markerSize=20, showTrue=true, showFalse=true);
+spy(x, names=list, markerSize=40, showTrue=true, showFalse=true);
+
 
 databank.list(d)
 

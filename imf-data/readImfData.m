@@ -1,3 +1,4 @@
+%% Read Brazil's data from IMF portal
 
 close all
 clear
@@ -27,6 +28,7 @@ databank.list(imfM)
 
 databank.toCSV(imfQ, "csv/imf-quarterly.csv");
 databank.toCSV(imfM, "csv/imf-monthly.csv");
+
 
 save mat/readImfData.mat imfQ imfM
 

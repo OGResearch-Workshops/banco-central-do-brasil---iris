@@ -108,7 +108,38 @@ draw(ch, databank.merge("horzcat", s0, s1, s3));
 visual.hlegend("bottom", "Hands-free", "Flat R anticipated", "Flat R with cost push shock");
 
 
+%% The same as before but split manually
 
+p4 = p3;
+d4 = h;
+d4.R(startSim+(0:3)) = d4.R(endHist);
+s4 = simulate( ...
+    m, d4, startSim:endSim ...
+    , "prependInput", true ...
+    , "plan", p3 ...
+    , "window", 20 ...
+);
 
+p5 = Plan.forModel(m, startSim+2:endSim);
+p5 = anticipate(p5, false, "Ep");
+p5 = exogenize(p5, startSim+(2:3), "R");
+p5 = endogenize(p5, startSim+(2:3), "Er");
+
+d5 = s4;
+d5.Ep(startSim+3) = -0.01;
+s5 = simulate( ...
+    m, d5, startSim+2:endSim ...
+    , "prependInput", true ...
+    , "plan", p5 ...
+);
+
+draw(ch, databank.merge("horzcat", s0, s3, s5));
+visual.hlegend("bottom", "Hands-free", "Flat R with cost push shock", "Flat R with future cost push shock");
+
+%%
+
+figure();
+plot(100*[s0.dP, s3.dP, s5.dP]^4, range=endHist:endHist+10, marker="s");
+title("Inflation");
 
 

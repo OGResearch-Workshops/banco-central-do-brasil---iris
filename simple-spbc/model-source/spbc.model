@@ -21,7 +21,7 @@
 
 !transition-variables
 
-    "Output" Y, "Labor" N, "Wage rate" W
+    "Output" Y, "Labor" N, "Wage rate" W, react_dP
     "Nominal marginal cost" Q, "Consumption habit" H, "Productivity" A
     "Rate of change in productivity" dA
     "Final prices" P, "Interest rate" R
@@ -44,7 +44,7 @@
 
 !parameters
 
-    "Long run growth !! \alpha" alpha, "Discount !! \beta" beta
+    "Long run growth !! \alpha" alpha, "Discount !! \beta" beta, beta_dP, beta_dW
     "Labor share !! \gamma" gamma, "Depreciation !! \delta" delta,
     "Fixed level of capital" k
     "Inflation target" pi
@@ -91,7 +91,7 @@
 
     Short, Long, Infl, Growth, Wage
 
-    term20
+    term20, react_dP
 
 %
 
@@ -114,7 +114,7 @@
 
     "Wage Phillips curve"
     xiw/(eta-1)*(dW/dW{-1} - 1) = ...
-        beta*xiw/(eta-1)*(dW{1}/dW - 1 + Ew) ...
+        beta*beta_dW*xiw/(eta-1)*(dW{1}/dW - 1 + Ew) ...
         + (eta/(eta-1)*N^psi/(Lambda*W) - 1) ...
     !! eta/(eta-1)*N^psi = Lambda*W;
 
@@ -135,7 +135,7 @@
 
     "Price Phillips curve"
     xip/(eta-1)*(dP/dP{-1} - 1) = ...
-        beta*xip/(eta-1)*(dP{1}/dP - 1 + Ep) ...
+        beta*beta_dP*xip/(eta-1)*(dP{1}/dP - 1 + Ep) ...
         + (eta/(eta-1)*RMC - 1) ...
     !! eta/(eta-1)*Q = P;
 
@@ -153,9 +153,11 @@
     % Monetary policy
 
     log(R) = rhor*log(R{-1}) + (1-rhor)*(log(&R) ...
-        + kappap*(log(dP{+4}) - log(pi)) ...
+        + kappap*react_dP ...
         + kappan*(N/&N - 1)) + Er ...
-    !! d4P = pi^4;
+    !! dP = pi;
+
+    react_dP = log(d4P{+3})/4 - log(pi) !! react_dP = 0;
 
 
     % Long rates

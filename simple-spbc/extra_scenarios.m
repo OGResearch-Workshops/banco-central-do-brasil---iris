@@ -120,10 +120,11 @@ s4 = simulate( ...
     , "window", 20 ...
 );
 
+
 p5 = Plan.forModel(m, startSim+2:endSim);
-p5 = anticipate(p5, false, "Ep");
 p5 = exogenize(p5, startSim+(2:3), "R");
 p5 = endogenize(p5, startSim+(2:3), "Er");
+
 
 d5 = s4;
 d5.Ep(startSim+3) = -0.01;
@@ -136,10 +137,64 @@ s5 = simulate( ...
 draw(ch, databank.merge("horzcat", s0, s3, s5));
 visual.hlegend("bottom", "Hands-free", "Flat R with cost push shock", "Flat R with future cost push shock");
 
+
 %%
 
 figure();
-plot(100*[s0.dP, s3.dP, s5.dP]^4, range=endHist:endHist+10, marker="s");
+plot(100*[s0.dP, s1.dP, s3.dP, s5.dP]^4, range=endHist:endHist+10, marker="s");
 title("Inflation");
+
+
+
+%% Flat rates consistent with supply side pressures
+
+p6 = Plan.forModel(m, startSim:endSim);
+p6 = exogenize(p6, startSim+(0:3), "R");
+p6 = endogenize(p6, startSim+(3), "Ew");
+p6 = endogenize(p6, startSim+(0:2), "Er");
+
+d6 = h;
+d6.R(startSim+(0:3)) = d6.R(endHist);
+
+s6 = simulate( ...
+    m, d6, startSim:endSim ...
+    , "prependInput", true ...
+    , "plan", p6 ...
+);
+
+draw(ch, databank.merge("horzcat", s1, s6));
+
+
+
+%% Flat rates consistent with multiple supply side shocks
+
+p7 = Plan.forModel(m, startSim:endSim, method="condition");
+p7 = exogenize(p7, startSim+(0:3), "R");
+p7 = endogenize(p7, startSim+(0:3), "Ew");
+p7 = endogenize(p7, startSim+(0:3), "Ep");
+
+d7 = h;
+d7.R(startSim+(0:3)) = d7.R(endHist);
+
+s7 = simulate( ...
+    m, d7, startSim:endSim ...
+    , "prependInput", true ...
+    , "plan", p7 ...
+);
+
+m.std_Ew = 0.50;
+p8 = Plan.forModel(m, startSim:endSim, method="condition");
+p8 = exogenize(p8, startSim+(0:3), "R");
+p8 = endogenize(p8, startSim+(0:3), "Ew");
+p8 = endogenize(p8, startSim+(0:3), "Ep");
+
+d8 = d7;
+s8 = simulate( ...
+    m, d8, startSim:endSim ...
+    , "prependInput", true ...
+    , "plan", p8 ...
+);
+
+draw(ch, databank.merge("horzcat", s7));
 
 

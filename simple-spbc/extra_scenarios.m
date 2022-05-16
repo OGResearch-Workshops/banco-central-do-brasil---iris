@@ -171,7 +171,7 @@ draw(ch, databank.merge("horzcat", s1, s6));
 p7 = Plan.forModel(m, startSim:endSim, method="condition");
 p7 = exogenize(p7, startSim+(0:3), "R");
 p7 = endogenize(p7, startSim+(0:3), "Ew");
-p7 = endogenize(p7, startSim+(0:3), "Ep");
+p7 = endogenize(p7, startSim+(0:3), "Ep");  
 
 d7 = h;
 d7.R(startSim+(0:3)) = d7.R(endHist);

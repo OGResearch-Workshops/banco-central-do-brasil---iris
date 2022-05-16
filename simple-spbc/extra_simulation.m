@@ -4,6 +4,10 @@ close all
 clear
 
 load mat/createModel.mat m
+m.kappan = 0.3;
+%m.xip = 10;
+m = solve(m);
+
 
 
 %% Set up simulation assumptions
@@ -47,7 +51,7 @@ d3 = steadydb(m, range);
 
 p3 = Plan.forModel(m, range);
 p3 = exogenize(p3, 1, "Y");
-p3 = endogenize(p3, 1, "Er");
+p3 = endogenize(p3, 1, "Ep");
 
 d3.Y(1) = d3.Y(1) * 1.01;
 
@@ -60,6 +64,20 @@ s3 = simulate( ...
 
 %% Find the size of an Ey shock to get Y up by 1%
 
+d4 = steadydb(m, range);
+
+p4 = Plan.forModel(m, range);
+p4 = exogenize(p4, 1, "Y");
+p4 = endogenize(p4, 2, "Ey");
+
+d4.Y(1) = d4.Y(1) * 1.01;
+
+s4 = simulate( ...
+    m, d4, range ....
+    , "prependInput", true ...
+    , "plan", p4 ...
+);
+
 
 
 %% Chart results
@@ -67,6 +85,7 @@ s3 = simulate( ...
 smcDb1 = databank.minusControl(m, s1);
 smcDb2 = databank.minusControl(m, s2);
 smcDb3 = databank.minusControl(m, s3);
+smcDb4 = databank.minusControl(m, s4);
 
 % chartDb = databank.merge("horzcat", d, s);
 
@@ -88,6 +107,7 @@ visual.hlegend( ...
     , "Anticipated Ey(t+4)" ...
     , "Anticipated but disappointed" ...
     , "Exogenize Y by Ey" ...
-    , "Exogenize Y by Ep" ...
+    ... , "Exogenize Y by Ep" ...
+    , "Exogenize Y by Ey(t+1)" ...
 );
 

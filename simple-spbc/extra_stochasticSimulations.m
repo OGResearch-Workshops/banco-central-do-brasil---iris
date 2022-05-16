@@ -1,4 +1,4 @@
-
+%% Stochastic simulations
 
 
 close all
@@ -6,7 +6,8 @@ clear
 
 load mat/createModel.mat m
 
-%% Stochastic simulations
+
+%% Run 1,000 simulations
 
 rng(0);
 
@@ -15,6 +16,7 @@ m.std_Er = 0.001;
 d = steadydb(m, 1:40, "shockFunc", @randn, "numColumns", 1000);
 
 s = simulate(m, d, 1:40, "anticipate", false);
+
 
 
 %% Asymptotic covariance matrix
@@ -31,6 +33,8 @@ plot(log(s.dP));
 figure();
 histogram(log(s.dP(40, :)));
 
+
+
 %% 
 
 ch = databank.Chartpack();
@@ -46,18 +50,18 @@ ch < "Real Wage: W/P ";
 ch < "Capital Price: Pk"; 
 ch < "Productivity: A ";
 
-draw(ch, databank.retrieveColumns(s, 1));
+% draw(ch, databank.retrieveColumns(s, 1));
 
 
 %% Create "historical" databank
 
-h = databank.retrieveColumns(s, 1);
+h = databank.retrieveColumns(s, 3);
 h = databank.redate(h, 40, qq(2022,1));
+ch.Range = getRange(h.Ey);
+draw(ch, h);
 
 mkdir csv
-% databank.toCSV(h, "csv/quasi-history.csv", "decimals", 16);
-
-
+databank.toCSV(h, "csv/quasi-history-2.csv", "decimals", 16);
 
 
 

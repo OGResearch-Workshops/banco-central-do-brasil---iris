@@ -124,6 +124,7 @@ disp("Is the variable stationary?")
 access(m, "is-stationary")
 
 
+
 %% Get currently assigned steady state
 %
 % Steady state is described by complex numbers:
@@ -160,10 +161,10 @@ disp("Maximum lead in the model")
 access(m, "maxLead")
 
 disp("Transition vector")
-access(m, "transition-vector")
+access(m, "transition-vector")'
 
 disp("List of initial conditions needed for simulations and forecasts")
-access(m, "initials")
+access(m, "initials")'
 
 
 %% Eigenvalues (Roots)

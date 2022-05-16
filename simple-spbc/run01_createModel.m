@@ -43,14 +43,13 @@ disp(m)
 % parameters that have been assigned no value are `NaN`.
 %
 
-m.alpha = 1.03^(1/4);
+m.alpha = 1.025^(1/4);
 m.beta = 0.985^(1/4);
-% m.beta0 = 0;
-m.beta_dP = 1;0.7;
-m.beta_dW = 1;0.7;
+m.beta0 = 0;
+m.beta1 = 0.8;
 m.gamma = 0.60;
 m.delta = 0.03;
-m.pi = 1.025^(1/4);
+m.pi = 1.02^(1/4);
 m.eta = 6;
 m.k = 10;
 m.psi = 0.25;
@@ -62,9 +61,9 @@ m.xip = 200; 300;
 m.rhoa = 0.90;
 m.rhoterm20 = 0.80;
 
-m.rhor = 0.8;
-m.kappap = 2.5;
-m.kappan = 0.2;
+m.rhor = 0.85;
+m.kappap = 4;3.5;
+m.kappan = 0;
 
 m.Short_ = 0;
 m.Long_ = 0;
@@ -91,17 +90,18 @@ access(m, "std-values")
 % the function will throw an error.
 %
 
-m = steady(m);
+m.RR = 1.01^(1/4);
+m = steady(m, "exogenize", "RR", "endogenize", "beta0");
 checkSteady(m);
 
-% m1 = m;
-% m1.A = 2;
-% m1.P = 1;
-% m1.alpha = 1.02^(1/4);
-% m1 = steady(m1, "fixLevel", ["A", "P"]);
-% checkSteady(m1);
-% 
-% access(m, 'steady')
+m1 = m;
+m1.A = 2;
+m1.P = 1;
+m1.alpha = 1.02^(1/4);
+m1 = steady(m1, "blocks", false, "fixLevel", ["A", "P"]);
+checkSteady(m1);
+
+access(m, 'steady')
 
 table( ...
     m, ["steadyLevel", "steadyChange", "form", "description"] ...

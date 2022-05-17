@@ -9,6 +9,7 @@
 
 !transition-variables
 
+a
     "Output" y
     "Output gap" y_gap
     "Potential output" y_tnd

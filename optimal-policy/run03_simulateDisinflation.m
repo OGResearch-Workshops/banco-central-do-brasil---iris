@@ -27,7 +27,7 @@ irisrequired 20140319
 % |read_model|.
 %
 
-load MAT/read_models.mat m1 m2 m3
+load mat/read_models.mat m1 m2 m3
 
 
 %% Set Up an Input Database
